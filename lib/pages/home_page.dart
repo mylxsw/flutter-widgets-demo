@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:widgets/pages/favorite_page.dart';
 import 'package:widgets/pages/setting_page.dart';
@@ -29,6 +30,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Icon _searchIcon = const Icon(Icons.search);
+
   void _onMenuItemTapped(String index, String title) {
     setState(() {
       _selectedIndex = index;
@@ -86,6 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _accountLogout() {
     print("account logout");
+    Navigator.of(context).pushNamed("/login");
   }
 
   @override
@@ -103,8 +106,11 @@ class _MyHomePageState extends State<MyHomePage> {
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var result = await Navigator.of(context)
-              .push(MaterialPageRoute(builder: (context) => const AddPage()));
+          // var result = await Navigator.of(context)
+          //     .push(MaterialPageRoute(builder: (context) => const AddPage()));
+
+          var result =
+              await Navigator.of(context).pushNamed("/add", arguments: "张三");
 
           if (result != null && result is AddResult) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -152,17 +158,36 @@ class _MyHomePageState extends State<MyHomePage> {
                   const SizedBox(height: 10),
                   Row(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(100),
-                          image: const DecorationImage(
-                            image: NetworkImage(
-                                "http://t13.baidu.com/it/u=2296451345,460589639&fm=224&app=112&f=JPEG?w=500&h=500"),
-                            fit: BoxFit.cover,
+                      // Container(
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(100),
+                      //     image: const DecorationImage(
+                      //       image: CachedNetworkImageProvider(
+                      //           "http://t13.baidu.com/it/u=2296451345,460589639&fm=224&app=112&f=JPEG?w=500&h=500"),
+                      //       fit: BoxFit.cover,
+                      //     ),
+                      //   ),
+                      //   width: 80,
+                      //   height: 80,
+                      // ),
+                      CachedNetworkImage(
+                        imageUrl:
+                            "http://t13.baidu.com/it/u=2296451345,460589639&fm=224&app=112&f=JPEG?w=500&h=500",
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(100),
+                            image: DecorationImage(
+                              image: imageProvider,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                        width: 80,
-                        height: 80,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(),
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                       const SizedBox(width: 20),
                       Column(

@@ -11,6 +11,10 @@ class AddPage extends StatefulWidget {
 class _AddPageState extends State<AddPage> {
   @override
   Widget build(BuildContext context) {
+    var defaultName = ModalRoute.of(context)?.settings.arguments == null
+        ? ''
+        : ModalRoute.of(context)?.settings.arguments as String;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Page'),
@@ -24,7 +28,7 @@ class _AddPageState extends State<AddPage> {
               },
               child: Text("厉害了"),
             ),
-            AddPageFormWidget(),
+            AddPageFormWidget(name: defaultName),
           ],
         ),
       ),
@@ -40,7 +44,9 @@ class AddResult {
 }
 
 class AddPageFormWidget extends StatefulWidget {
-  const AddPageFormWidget({super.key});
+  const AddPageFormWidget({super.key, required this.name});
+
+  final String name;
 
   @override
   State<AddPageFormWidget> createState() => _AddPageFormWidgetState();
@@ -49,20 +55,22 @@ class AddPageFormWidget extends StatefulWidget {
 class _AddPageFormWidgetState extends State<AddPageFormWidget> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _nameController = TextEditingController();
-  TextEditingController _ageController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    _nameController.text = widget.name;
     return Form(
         key: _formKey,
         child: Column(
           children: [
             TextFormField(
-              decoration: InputDecoration(
-                  hintText: "请输入姓名",
-                  label: Text("姓名"),
-                  prefixIcon: Icon(Icons.person)),
+              decoration: const InputDecoration(
+                hintText: "请输入姓名",
+                label: Text("姓名"),
+                prefixIcon: Icon(Icons.person),
+              ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return "姓名不能为空";
@@ -73,7 +81,7 @@ class _AddPageFormWidgetState extends State<AddPageFormWidget> {
               controller: _nameController,
             ),
             TextFormField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                   hintText: "请输入年龄",
                   prefixIcon: Icon(Icons.numbers),
                   label: Text("年龄")),
